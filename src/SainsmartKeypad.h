@@ -88,6 +88,10 @@ class SainsmartKeypad
     // This is the method you want to use least or only in special cases.
     int getKey_instant();
 
+    // method to customize the analog read values
+    void setAnalogReadValues(int arv_select, int arv_left, int arv_up,
+      int arv_down, int arv_right, int arv_nokey);
+
     // set the rate to calculate and refresh the analog key input.
     void setRefreshRate(int rate);
 
@@ -105,6 +109,13 @@ class SainsmartKeypad
 
     int _refreshRate;
     int _keyPin;
+
+    int arv_select_;
+    int arv_left_;
+    int arv_up_;
+    int arv_down_;
+    int arv_right_;
+    int arv_nokey_;
 
     int _msToActivateFastScroll;
     int _fastScrollTriggerRate;

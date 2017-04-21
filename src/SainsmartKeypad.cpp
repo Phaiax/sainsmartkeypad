@@ -9,14 +9,6 @@ static int DEFAULT_MS_TO_ACTIVATE_FAST_SCROLL = 400;
 static int DEFAULT_FAST_SCROLL_TRIGGER_EVERY_MS = 100;
 static int DEFAULT_MAX_FAST_SCROLL_TRIGGER_EVERY_MS = 20;
 
-// ADJUST THIS REGARDING YOUR OWN HARDWARE
-static int UPKEY_ARV = 142; //that's read "analogue read value"
-static int DOWNKEY_ARV = 326;
-static int LEFTKEY_ARV = 503;
-static int RIGHTKEY_ARV = 0;
-static int SELKEY_ARV = 741;
-static int NOKEY_ARV = 1023;
-
 
 SainsmartKeypad::SainsmartKeypad(int rate, int pin)
 {
@@ -44,6 +36,13 @@ void SainsmartKeypad::_init()
   _keyPin = DEFAULT_KEY_PIN;
   _prevKey = NO_KEY;
   _curKey = NO_KEY;
+
+  arv_select_ = 741;
+  arv_left_ = 503;
+  arv_up_ = 142;
+  arv_down_ = 326;
+  arv_right_ = 0;
+  arv_nokey_ = 1023;
 }
 
 int SainsmartKeypad::getKey_fastscroll()
@@ -130,6 +129,17 @@ int SainsmartKeypad::getKey_instant()
   else if (_curInput > LEFTKEY_ARV - DEFAULT_THRESHOLD && _curInput < LEFTKEY_ARV + DEFAULT_THRESHOLD ) return LEFT_KEY;
   else if (_curInput > SELKEY_ARV - DEFAULT_THRESHOLD && _curInput < SELKEY_ARV + DEFAULT_THRESHOLD ) return SELECT_KEY;
   else return NO_KEY;
+}
+
+void SainsmartKeypad::setAnalogReadValues(int arv_select, int arv_left, int arv_up,
+                                          int arv_down, int arv_right, int arv_nokey)
+{
+  arv_select_ = arv_select;
+  arv_left_ = arv_left;
+  arv_up_ = arv_up;
+  arv_down_ = arv_down;
+  arv_right_ = arv_right;
+  arv_nokey_ = arv_nokey;
 }
 
 void SainsmartKeypad::setRefreshRate(int rate)
