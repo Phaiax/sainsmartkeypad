@@ -1,19 +1,7 @@
-#include "Arduino.h"
-#include "sainsmartkeypad.h"
-
-/* The source code in this file sainsmartkeypad.cpp
- * is licensed under the GNU GPLv3 (http://www.gnu.org/licenses/gpl.html)
- * Ask me if you want to have extended rights. */
- 
-/* Authors: Phaiax (Daniel Seemer). 
- * Mail patches to: phaiax <aet> invisibletower [doat] de  
- * (confusing spam bots...)
- * 
- * LIBRARY-VERSION: 1.0
- */
+#include "SainsmartKeypad.h"
 
 
-static int DEFAULT_KEY_PIN = 0; 
+static int DEFAULT_KEY_PIN = 0;
 static int DEFAULT_THRESHOLD = 15;
 static int DEFAULT_REFRESH_RATE = 10;
 
@@ -42,11 +30,10 @@ SainsmartKeypad::SainsmartKeypad(int pin){
   _keyPin = pin;
 }
 
-
-SainsmartKeypad::SainsmartKeypad() 
+SainsmartKeypad::SainsmartKeypad()
 {
   _init();
-} 
+}
 
 void SainsmartKeypad::_init()
 {
@@ -59,10 +46,9 @@ void SainsmartKeypad::_init()
   _curKey = NO_KEY;
 }
 
-
 int SainsmartKeypad::getKey_fastscroll()
 {
-  _curKey = getKey_periodic();  
+  _curKey = getKey_periodic();
   if(_curKey == SAMPLE_WAIT)
     return SAMPLE_WAIT;  // Ignore SAMPLE_WAITs
   if(_prevKey != _curKey)
@@ -93,27 +79,26 @@ int SainsmartKeypad::getKey_fastscroll()
       if(curmillis > _lastFastScrollTime + triggerevery)
       {
         // FastTrigger NOW
-        _lastFastScrollTime = curmillis; 
+        _lastFastScrollTime = curmillis;
         //Serial.print(triggerevery);
         //E
-        //Serial.println("Scroll");    
-        return _curKey;      
+        //Serial.println("Scroll");
+        return _curKey;
       }
       else
         // Key is pressed but not forwarded. Wait for next
         // fast scroll trigger.
-        return SAMPLE_WAIT; 
+        return SAMPLE_WAIT;
     }
     else
       // Fast scroll not yet activated
-      return SAMPLE_WAIT; 
+      return SAMPLE_WAIT;
   }
 
   // Code should not reach this.
   return 99;
   ;
 }
-
 
 int SainsmartKeypad::getKey_waitrelease(){
   _curKey = getKey_periodic();
@@ -149,7 +134,7 @@ int SainsmartKeypad::getKey_instant()
 
 void SainsmartKeypad::setRefreshRate(int rate)
 {
-  _refreshRate = rate; 
+  _refreshRate = rate;
 }
 void SainsmartKeypad::setMsToActivateFastScroll(int ms)
 {
@@ -165,14 +150,4 @@ void SainsmartKeypad::setFastScrollTriggerRate(int rate, int maxrate)
     _refreshRate = _fastScrollTriggerRate;
   if(_refreshRate > _maxFastScrollTriggerRate)
     _refreshRate = _maxFastScrollTriggerRate;
-
 }
-
-
-
-
-
-
-
-
-
