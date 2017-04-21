@@ -2,7 +2,6 @@
 
 
 static int DEFAULT_KEY_PIN = 0;
-static int DEFAULT_THRESHOLD = 15;
 static int DEFAULT_REFRESH_RATE = 10;
 
 static int DEFAULT_MS_TO_ACTIVATE_FAST_SCROLL = 400;
@@ -43,6 +42,7 @@ void SainsmartKeypad::_init()
   arv_down_ = 326;
   arv_right_ = 0;
   arv_nokey_ = 1023;
+  arv_threshold_ = 15;
 }
 
 int SainsmartKeypad::getKey_fastscroll()
@@ -121,14 +121,31 @@ int SainsmartKeypad::getKey_periodic()
 
 int SainsmartKeypad::getKey_instant()
 {
+  int key = NO_KEY;
   _curInput = analogRead(_keyPin);
 
-  if (_curInput > UPKEY_ARV - DEFAULT_THRESHOLD && _curInput < UPKEY_ARV + DEFAULT_THRESHOLD ) return UP_KEY;
-  else if (_curInput > DOWNKEY_ARV - DEFAULT_THRESHOLD && _curInput < DOWNKEY_ARV + DEFAULT_THRESHOLD ) return  DOWN_KEY;
-  else if (_curInput > RIGHTKEY_ARV - DEFAULT_THRESHOLD && _curInput < RIGHTKEY_ARV + DEFAULT_THRESHOLD ) return RIGHT_KEY;
-  else if (_curInput > LEFTKEY_ARV - DEFAULT_THRESHOLD && _curInput < LEFTKEY_ARV + DEFAULT_THRESHOLD ) return LEFT_KEY;
-  else if (_curInput > SELKEY_ARV - DEFAULT_THRESHOLD && _curInput < SELKEY_ARV + DEFAULT_THRESHOLD ) return SELECT_KEY;
-  else return NO_KEY;
+  if (_curInput > arv_select_ - arv_threshold_ && _curInput < arv_select_ + arv_threshold_ )
+  {
+    key = SELECT_KEY;
+  }
+  else if (_curInput > arv_left_ - arv_threshold_ && _curInput < arv_left_ + arv_threshold_ )
+  {
+    key = LEFT_KEY;
+  }
+  else if (_curInput > arv_up_ - arv_threshold_ && _curInput < arv_up_ + arv_threshold_ )
+  {
+    key = UP_KEY;
+  }
+  else if (_curInput > arv_down_ - arv_threshold_ && _curInput < arv_down_ + arv_threshold_ )
+  {
+    key = DOWN_KEY;
+  }
+  else if (_curInput > arv_right_ - arv_threshold_ && _curInput < arv_right_ + arv_threshold_ )
+  {
+    key = RIGHT_KEY;
+  }
+
+  return key;
 }
 
 void SainsmartKeypad::setAnalogReadValues(int arv_select, int arv_left, int arv_up,

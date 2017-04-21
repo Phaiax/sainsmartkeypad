@@ -116,6 +116,7 @@ class SainsmartKeypad
     int arv_down_;
     int arv_right_;
     int arv_nokey_;
+    int arv_threshold_;
 
     int _msToActivateFastScroll;
     int _fastScrollTriggerRate;
