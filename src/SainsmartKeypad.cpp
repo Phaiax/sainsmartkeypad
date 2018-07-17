@@ -1,33 +1,12 @@
-#include "Arduino.h"
-#include "sainsmartkeypad.h"
-
-/* The source code in this file sainsmartkeypad.cpp
- * is licensed under the GNU GPLv3 (http://www.gnu.org/licenses/gpl.html)
- * Ask me if you want to have extended rights. */
- 
-/* Authors: Phaiax (Daniel Seemer). 
- * Mail patches to: phaiax <aet> invisibletower [doat] de  
- * (confusing spam bots...)
- * 
- * LIBRARY-VERSION: 1.0
- */
+#include "SainsmartKeypad.h"
 
 
-static int DEFAULT_KEY_PIN = 0; 
-static int DEFAULT_THRESHOLD = 15;
+static int DEFAULT_KEY_PIN = 0;
 static int DEFAULT_REFRESH_RATE = 10;
 
 static int DEFAULT_MS_TO_ACTIVATE_FAST_SCROLL = 400;
 static int DEFAULT_FAST_SCROLL_TRIGGER_EVERY_MS = 100;
 static int DEFAULT_MAX_FAST_SCROLL_TRIGGER_EVERY_MS = 20;
-
-// ADJUST THIS REGARDING YOUR OWN HARDWARE
-static int UPKEY_ARV = 142; //that's read "analogue read value"
-static int DOWNKEY_ARV = 326;
-static int LEFTKEY_ARV = 503;
-static int RIGHTKEY_ARV = 0;
-static int SELKEY_ARV = 741;
-static int NOKEY_ARV = 1023;
 
 
 SainsmartKeypad::SainsmartKeypad(int rate, int pin)
@@ -42,11 +21,10 @@ SainsmartKeypad::SainsmartKeypad(int pin){
   _keyPin = pin;
 }
 
-
-SainsmartKeypad::SainsmartKeypad() 
+SainsmartKeypad::SainsmartKeypad()
 {
   _init();
-} 
+}
 
 void SainsmartKeypad::_init()
 {
@@ -57,12 +35,19 @@ void SainsmartKeypad::_init()
   _keyPin = DEFAULT_KEY_PIN;
   _prevKey = NO_KEY;
   _curKey = NO_KEY;
-}
 
+  arv_select_ = 741;
+  arv_left_ = 503;
+  arv_up_ = 142;
+  arv_down_ = 326;
+  arv_right_ = 0;
+  arv_nokey_ = 1023;
+  arv_threshold_ = 15;
+}
 
 int SainsmartKeypad::getKey_fastscroll()
 {
-  _curKey = getKey_periodic();  
+  _curKey = getKey_periodic();
   if(_curKey == SAMPLE_WAIT)
     return SAMPLE_WAIT;  // Ignore SAMPLE_WAITs
   if(_prevKey != _curKey)
@@ -93,27 +78,26 @@ int SainsmartKeypad::getKey_fastscroll()
       if(curmillis > _lastFastScrollTime + triggerevery)
       {
         // FastTrigger NOW
-        _lastFastScrollTime = curmillis; 
+        _lastFastScrollTime = curmillis;
         //Serial.print(triggerevery);
         //E
-        //Serial.println("Scroll");    
-        return _curKey;      
+        //Serial.println("Scroll");
+        return _curKey;
       }
       else
         // Key is pressed but not forwarded. Wait for next
         // fast scroll trigger.
-        return SAMPLE_WAIT; 
+        return SAMPLE_WAIT;
     }
     else
       // Fast scroll not yet activated
-      return SAMPLE_WAIT; 
+      return SAMPLE_WAIT;
   }
 
   // Code should not reach this.
   return 99;
   ;
 }
-
 
 int SainsmartKeypad::getKey_waitrelease(){
   _curKey = getKey_periodic();
@@ -137,19 +121,47 @@ int SainsmartKeypad::getKey_periodic()
 
 int SainsmartKeypad::getKey_instant()
 {
+  int key = NO_KEY;
   _curInput = analogRead(_keyPin);
 
-  if (_curInput > UPKEY_ARV - DEFAULT_THRESHOLD && _curInput < UPKEY_ARV + DEFAULT_THRESHOLD ) return UP_KEY;
-  else if (_curInput > DOWNKEY_ARV - DEFAULT_THRESHOLD && _curInput < DOWNKEY_ARV + DEFAULT_THRESHOLD ) return  DOWN_KEY;
-  else if (_curInput > RIGHTKEY_ARV - DEFAULT_THRESHOLD && _curInput < RIGHTKEY_ARV + DEFAULT_THRESHOLD ) return RIGHT_KEY;
-  else if (_curInput > LEFTKEY_ARV - DEFAULT_THRESHOLD && _curInput < LEFTKEY_ARV + DEFAULT_THRESHOLD ) return LEFT_KEY;
-  else if (_curInput > SELKEY_ARV - DEFAULT_THRESHOLD && _curInput < SELKEY_ARV + DEFAULT_THRESHOLD ) return SELECT_KEY;
-  else return NO_KEY;
+  if (_curInput > arv_select_ - arv_threshold_ && _curInput < arv_select_ + arv_threshold_ )
+  {
+    key = SELECT_KEY;
+  }
+  else if (_curInput > arv_left_ - arv_threshold_ && _curInput < arv_left_ + arv_threshold_ )
+  {
+    key = LEFT_KEY;
+  }
+  else if (_curInput > arv_up_ - arv_threshold_ && _curInput < arv_up_ + arv_threshold_ )
+  {
+    key = UP_KEY;
+  }
+  else if (_curInput > arv_down_ - arv_threshold_ && _curInput < arv_down_ + arv_threshold_ )
+  {
+    key = DOWN_KEY;
+  }
+  else if (_curInput > arv_right_ - arv_threshold_ && _curInput < arv_right_ + arv_threshold_ )
+  {
+    key = RIGHT_KEY;
+  }
+
+  return key;
+}
+
+void SainsmartKeypad::setAnalogReadValues(int arv_select, int arv_left, int arv_up,
+                                          int arv_down, int arv_right, int arv_nokey)
+{
+  arv_select_ = arv_select;
+  arv_left_ = arv_left;
+  arv_up_ = arv_up;
+  arv_down_ = arv_down;
+  arv_right_ = arv_right;
+  arv_nokey_ = arv_nokey;
 }
 
 void SainsmartKeypad::setRefreshRate(int rate)
 {
-  _refreshRate = rate; 
+  _refreshRate = rate;
 }
 void SainsmartKeypad::setMsToActivateFastScroll(int ms)
 {
@@ -165,15 +177,4 @@ void SainsmartKeypad::setFastScrollTriggerRate(int rate, int maxrate)
     _refreshRate = _fastScrollTriggerRate;
   if(_refreshRate > _maxFastScrollTriggerRate)
     _refreshRate = _maxFastScrollTriggerRate;
-
 }
-
-
-
-
-
-
-
-
-
-
