@@ -13,13 +13,13 @@ SainsmartKeypad	KEYWORD1
 #######################################
 
 getKey_fastscroll	KEYWORD2
-getKey_waitrelease KEYWORD2
+getKey_waitrelease	KEYWORD2
 getKey_periodic	KEYWORD2
-getKey_instant KEYWORD2
-setAnalogReadValues KEYWORD2
-setRefreshRate KEYWORD2
+getKey_instant	KEYWORD2
+setAnalogReadValues	KEYWORD2
+setRefreshRate	KEYWORD2
 setMsToActivateFastScroll	KEYWORD2
-setFastScrollTriggerRate KEYWORD2
+setFastScrollTriggerRate	KEYWORD2
 
 #######################################
 # Instances (KEYWORD2)
